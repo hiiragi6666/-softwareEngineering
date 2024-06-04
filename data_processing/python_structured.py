@@ -25,6 +25,7 @@ PATTERN_VAR_EQUAL = re.compile("(\s*[_a-zA-Z][_a-zA-Z0-9]*\s*)(,\s*[_a-zA-Z][_a-
 PATTERN_VAR_FOR = re.compile("for\s+[_a-zA-Z][_a-zA-Z0-9]*\s*(,\s*[_a-zA-Z][_a-zA-Z0-9]*)*\s+in")
 
 
+# 修复 Python 程序中的标准输入/输出（I/O）格式
 def repair_program_io(code):
     # reg patterns for case 1
     pattern_case1_in = re.compile("In ?\[\d+]: ?")  # flag1
@@ -128,11 +129,13 @@ def repair_program_io(code):
     return repaired_code, code_list
 
 
+# 提取变量名
 def get_vars(ast_root):
     return sorted(
         {node.id for node in ast.walk(ast_root) if isinstance(node, ast.Name) and not isinstance(node.ctx, ast.Load)})
 
 
+# 从 code 字符串中尽可能多地提取变量名
 def get_vars_heuristics(code):
     varnames = set()
     code_lines = [_ for _ in code.split("\n") if len(_.strip())]
@@ -176,6 +179,7 @@ def get_vars_heuristics(code):
     return varnames
 
 
+# python语句处理
 def PythonParser(code):
     bool_failed_var = False
     bool_failed_token = False
@@ -195,6 +199,7 @@ def PythonParser(code):
 
     tokenized_code = []
 
+    # 尝试将该代码字符串解析为token令牌序列时返回 True 或 Fals
     def first_trial(_code):
 
         if len(_code) == 0:
@@ -379,6 +384,7 @@ def process_sent_word(line):
 
 #############################################################################
 
+# 过滤掉Python代码中不常用的字符，以减少解析时的错误
 def filter_all_invachar(line):
     # 去除非常用符号；防止解析有误
     assert isinstance(line, object)
@@ -393,6 +399,7 @@ def filter_all_invachar(line):
     return line
 
 
+# 过滤掉Python代码中不常用的字符，以减少解析时的错误
 def filter_part_invachar(line):
     # 去除非常用符号；防止解析有误
     line = re.sub('[^(0-9|a-zA-Z\-_\'\")\n]+', ' ', line)
@@ -446,6 +453,8 @@ def python_code_parse(line):
 
 #######################主函数：句子的tokens##################################
 
+
+# 解析 python 查询语句，进行文本预处理
 def python_query_parse(line):
     line = filter_all_invachar(line)
     line = process_nl_line(line)
@@ -461,6 +470,7 @@ def python_query_parse(line):
     return word_list
 
 
+# 将提供的文本进行标准化和归一化处理,除去所有特殊字符
 def python_context_parse(line):
     line = filter_part_invachar(line)
     # 在这一步的时候驼峰命名被转换成了下划线
