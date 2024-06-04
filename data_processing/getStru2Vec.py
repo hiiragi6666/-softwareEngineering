@@ -35,6 +35,8 @@ def multipro_sqlang_context(data_list):
             result.append(sqlang_context_parse(line))
     return result
 
+
+# 解析函数
 def parse(data_list, split_num, context_func, query_func, code_func):
     pool = multiprocessing.Pool()
     split_list = [data_list[i:i + split_num] for i in range(0, len(data_list), split_num)]
