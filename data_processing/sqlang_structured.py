@@ -50,6 +50,8 @@ def tokenizeRegex(s):
 #---------------------子函数2：代码的规则--------------------
 class SqlangParser():
     @staticmethod
+
+#对输入的SQL语句进行清理和标准化
     def sanitizeSql(sql):
         s = sql.strip().lower()
         if not s[-1] == ";":
@@ -63,6 +65,7 @@ class SqlangParser():
         s = s.replace('#', '')
         return s
 
+#将输入的SQL解析为一个SQL令牌列表,并对其进行处理
     def parseStrings(self, tok):
         if isinstance(tok, sqlparse.sql.TokenList):
             for c in tok.tokens:
@@ -73,6 +76,7 @@ class SqlangParser():
             else:
                 tok.value = "CODSTR"
 
+  #重命名 SQL 语句中的标识符
     def renameIdentifiers(self, tok):
         if isinstance(tok, sqlparse.sql.TokenList):
             for c in tok.tokens:
@@ -99,9 +103,11 @@ class SqlangParser():
         elif tok.ttype == HEX:
             tok.value = "CODHEX"
 
+#将 SQL 解析器对象哈希化
     def __hash__(self):
         return hash(tuple([str(x) for x in self.tokensWithBlanks]))
 
+#初始化
     def __init__(self, sql, regex=False, rename=True):
 
         self.sql = SqlangParser.sanitizeSql(sql)
@@ -142,6 +148,7 @@ class SqlangParser():
                     flatParse.append(str(token))
         return flatParse
 
+ #删除多余空格
     def removeWhitespaces(self, tok):
         if isinstance(tok, sqlparse.sql.TokenList):
             tmpChildren = []
@@ -153,6 +160,7 @@ class SqlangParser():
             for c in tok.tokens:
                 self.removeWhitespaces(c)
 
+ #识别 SQL 表达式中的子查询
     def identifySubQueries(self, tokenList):
         isSubQuery = False
 
@@ -165,6 +173,7 @@ class SqlangParser():
                 isSubQuery = True
         return isSubQuery
 
+#用于标识 SQL 解析器对象中的不同类型的文本字面量
     def identifyLiterals(self, tokenList):
         blankTokens = [sqlparse.tokens.Name, sqlparse.tokens.Name.Placeholder]
         blankTokenTypes = [sqlparse.sql.Identifier]
@@ -187,6 +196,7 @@ class SqlangParser():
                 tok.ttype = WILDCARD
             elif (tok.ttype in blankTokens or isinstance(tok, blankTokenTypes[0])):
                 tok.ttype = COLUMN
+
 
     def identifyFunctions(self, tokenList):
         for tok in tokenList.tokens:
@@ -341,6 +351,7 @@ def process_sent_word(line):
 
 #############################################################################
 
+# 去除所有非常用符号；防止解析有误
 def filter_all_invachar(line):
     # 去除非常用符号；防止解析有误
     line = re.sub('[^(0-9|a-z|A-Z|\-|_|\'|\"|\-|\(|\)|\n)]+', ' ', line)
@@ -353,7 +364,7 @@ def filter_all_invachar(line):
     line = line.replace('|', ' ').replace('¦', ' ')
     return line
 
-
+# 去除部分非常用符号；防止解析有误
 def filter_part_invachar(line):
     #去除非常用符号；防止解析有误
     line= re.sub('[^(0-9|a-z|A-Z|\-|#|/|_|,|\'|=|>|<|\"|\-|\\|\(|\)|\?|\.|\*|\+|\[|\]|\^|\{|\}|\n)]+',' ', line)
@@ -403,6 +414,7 @@ def sqlang_code_parse(line):
 
 #######################主函数：句子的tokens##################################
 
+# 解析 SQL 查询语句，进行文本预处理
 def sqlang_query_parse(line):
     line = filter_all_invachar(line)
     line = process_nl_line(line)
