@@ -12,7 +12,7 @@ def get_vocab(corpus1, corpus2):
     print(len(word_vocab))
     return word_vocab
 
-
+# 读取pickle文件
 def load_pickle(filename):
     with open(filename, 'rb') as f:
         data = pickle.load(f)
