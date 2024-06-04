@@ -429,7 +429,7 @@ def sqlang_query_parse(line):
 
     return word_list
 
-
+# 将提供的文本进行标准化和归一化处理
 def sqlang_context_parse(line):
     line = filter_part_invachar(line)
     line = process_nl_line(line)
