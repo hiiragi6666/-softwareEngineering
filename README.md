@@ -1,4 +1,4 @@
-# -softwareEngineering
+# softwareEngineering
 
 ## 目录
 
@@ -13,7 +13,7 @@
 
 ## 一、项目框架
 ```
-|── hnn_processing  
+|── data_processing  
 │     └── embeddings_process.py  
 │     └── getStru2Vec.py
 │     └── process_single_corpus.py
